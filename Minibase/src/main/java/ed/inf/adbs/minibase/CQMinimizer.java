@@ -5,6 +5,9 @@ import ed.inf.adbs.minibase.base.Query;
 import ed.inf.adbs.minibase.base.Head;
 import ed.inf.adbs.minibase.parser.QueryParser;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -25,9 +28,9 @@ public class CQMinimizer {
         String inputFile = args[0];
         String outputFile = args[1];
 
-//        minimizeCQ(inputFile, outputFile);
+        minimizeCQ(inputFile, outputFile);
 
-        parsingExample(inputFile);
+//        parsingExample(inputFile);
     }
 
     /**
@@ -39,6 +42,35 @@ public class CQMinimizer {
      */
     public static void minimizeCQ(String inputFile, String outputFile) {
         // TODO: add your implementation
+        Query query = parsingQuery(inputFile);
+        System.out.println("Entire query: " + query);
+
+        // Write minimized query to output/query{?}.txt
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
+            writer.write(query.toString());
+            writer.close();
+        } catch (IOException e) {
+            System.err.println("Exception occurred during writer minimized query to output/query{?}.txt");
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * parse query in input file
+     *
+     * @return Parsed query in Java object
+     */
+    public static Query parsingQuery(String filename) {
+        Query query = null;
+        try {
+            query = QueryParser.parse(Paths.get(filename));
+        } catch (Exception e) {
+            System.err.println("Exception occurred during parsing");
+            e.printStackTrace();
+        }
+        return query;
     }
 
     /**
