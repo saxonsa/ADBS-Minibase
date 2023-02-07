@@ -1,15 +1,16 @@
 package ed.inf.adbs.minibase;
 
-import ed.inf.adbs.minibase.base.Atom;
-import ed.inf.adbs.minibase.base.Query;
-import ed.inf.adbs.minibase.base.Head;
+import ed.inf.adbs.minibase.base.*;
 import ed.inf.adbs.minibase.parser.QueryParser;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -29,8 +30,6 @@ public class CQMinimizer {
         String outputFile = args[1];
 
         minimizeCQ(inputFile, outputFile);
-
-//        parsingExample(inputFile);
     }
 
     /**
@@ -41,20 +40,64 @@ public class CQMinimizer {
      *
      */
     public static void minimizeCQ(String inputFile, String outputFile) {
-        // TODO: add your implementation
         Query query = parsingQuery(inputFile);
-        System.out.println("Entire query: " + query);
 
-        // Write minimized query to output/query{?}.txt
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
-            writer.write(query.toString());
-            writer.close();
-        } catch (IOException e) {
-            System.err.println("Exception occurred during writer minimized query to output/query{?}.txt");
-            e.printStackTrace();
+        // extract x1...xk from head into a list
+        Head head = query.getHead();
+
+        // iterate every atom in body to choose one for minimization
+        List<Atom> body = query.getBody();
+
+        for (int i = 0; i < body.size(); i++) {
+            // test if "body \ {atom}" contains x1...xk in head
+            List<Atom> bodyCloned = new ArrayList<>(body);
+            Atom removedAtom = bodyCloned.remove(i);
+            if(!checkFreeVariablesContained(bodyCloned, head)) {
+                continue;
+            }
+
+            // test if there is a query homomorphism from "Q(x1...xk) :- body" to "Q(x1...xk) :- body\{atom}"
+
+
+            // if true, update body to body \ {atom}
+
+            // else continue
+
+            // until the last atom
         }
 
+        outputMinimizedQuery(query, outputFile);
+    }
+
+    /**
+     * Check if the free variables are contained in the body \ {atom} set
+     */
+    public static boolean checkFreeVariablesContained(List<Atom> body, Head head) {
+        // boolean CQ
+        if (head.getVariables().size() == 0) {
+            return true;
+        }
+
+        HashSet<String> bodyVariables = new HashSet<>();
+
+        // extract free variables from head query
+        HashSet<String> freeVariables = new HashSet<>();
+        for (Variable var : head.getVariables()) {
+            freeVariables.add(var.toString());
+        }
+
+        // extract variables from body
+        for (Atom a : body) {
+            RelationalAtom atom = (RelationalAtom) a;
+            for (Term t : atom.getTerms()) {
+                if (t instanceof Variable) {
+                    bodyVariables.add(t.toString());
+                }
+            }
+        }
+
+        // check if free variables are contained in the new(remained) body set
+        return bodyVariables.containsAll(freeVariables);
     }
 
     /**
@@ -74,29 +117,16 @@ public class CQMinimizer {
     }
 
     /**
-     * Example method for getting started with the parser.
-     * Reads CQ from a file and prints it to screen, then extracts Head and Body
-     * from the query and prints them to screen.
+     * write minimized query into output/query{?} file
      */
-
-    public static void parsingExample(String filename) {
-
+    public static void outputMinimizedQuery(Query query, String filename) {
         try {
-            Query query = QueryParser.parse(Paths.get(filename));
-            // Query query = QueryParser.parse("Q(x, y) :- R(x, z), S(y, z, w)");
-            // Query query = QueryParser.parse("Q(x) :- R(x, 'z'), S(4, z, w)");
-
-            System.out.println("Entire query: " + query);
-            Head head = query.getHead();
-            System.out.println("Head: " + head);
-            List<Atom> body = query.getBody();
-            System.out.println("Body: " + body);
-        }
-        catch (Exception e)
-        {
-            System.err.println("Exception occurred during parsing");
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
+            writer.write(query.toString());
+            writer.close();
+        } catch (IOException e) {
+            System.err.println("Exception occurred during writer minimized query to output/query{?}.txt");
             e.printStackTrace();
         }
     }
-
 }
