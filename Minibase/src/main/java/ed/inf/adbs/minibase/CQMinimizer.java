@@ -176,8 +176,6 @@ public class CQMinimizer {
         System.out.println("query homomorphism: " + validHomoCombinations);
 
         return validHomoCombinations.size() > 0;
-
-//        return false;
     }
 
     public static ArrayList<HashMap<String, String>> getValidHomoCombinations(ArrayList<ArrayList<HashMap<String, String>>> groups) {
@@ -199,13 +197,23 @@ public class CQMinimizer {
         ArrayList<HashMap<String, String>> group = groups.get(groupIndex);
         for (HashMap<String, String> choice : group) {
             HashMap<String, String> beforeNextHomo = new HashMap<>(currentHomoCombination);
-            if (!checkValidHomoCombination(currentHomoCombination, choice)) {
+            if (checkValidHomoCombination(currentHomoCombination, choice)) {
+                addHomoCombination(currentHomoCombination, choice);
+            } else {
                 continue;
             }
             dfs(groups, groupIndex + 1, currentHomoCombination, validHomoCombinations);
 
             // remove the original future choice
             currentHomoCombination = new HashMap<>(beforeNextHomo);
+        }
+    }
+
+    public static void addHomoCombination(HashMap<String, String> current, HashMap<String, String> choice) {
+        for (Map.Entry<String, String> entry : choice.entrySet()) {
+            if (!current.containsKey(entry.getKey())) {
+                current.put(entry.getKey(), entry.getValue());
+            }
         }
     }
 
@@ -221,8 +229,6 @@ public class CQMinimizer {
                 }
             }
         }
-
-        homoCombination = beforeHomoCombination;
         return true;
     }
 
