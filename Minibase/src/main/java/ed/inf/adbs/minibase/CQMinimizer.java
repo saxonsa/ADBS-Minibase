@@ -30,11 +30,14 @@ public class CQMinimizer {
     }
 
     /**
+     *
      * CQ minimization procedure
      *
      * Assume the body of the query from inputFile has no comparison atoms
      * but could potentially have constants in its relational atoms.
      *
+     * @param inputFile path of input files in string format, data/minimization/input/query*.txt
+     * @param outputFile path of output files in string format, data/minimization/output/query*.txt
      */
     public static void minimizeCQ(String inputFile, String outputFile) {
         Query query = parsingQuery(inputFile);
@@ -64,14 +67,21 @@ public class CQMinimizer {
             iterator.remove();
         }
 
+        // output the minimized query to output/?.txt
         outputMinimizedQuery(query, outputFile);
     }
 
     /**
-     * Check if there is a query homomorphism from the original query to the minimized query
+     * Find all valid mappings of query homomorphism from original query to minimized query
+     *
+     * @param originalBody body part of original query
+     * @param minimizedBody body part of minimized query
+     * @return whether the query homo exists or not
      */
     public static boolean checkHomomorphismExistence(List<Atom>originalBody, List<Atom>minimizedBody) {
-        // extract relation name from both body query and check if they match, Like {R, S, T...}
+        // extract the name of relation from body of query of both original query
+        // and minimized query, then check if they match, Like {R, S, T...}
+        // if they are not matched, the query homo does not exist and the current atom cannot be deleted
         HashSet<String> originalRelation = new HashSet<>();
         HashSet<String> minimizedRelation = new HashSet<>();
         for (Atom a : originalBody) {
@@ -110,8 +120,10 @@ public class CQMinimizer {
                 }
             }
 
-            // List all the mappings from original query to minimized query
-
+            // List all the mappings combination from original query to minimized query
+            // Not necessarily the query homomorphism
+            // it will be the source for later filter
+            // but at least the mapping should be valid
             ArrayList<ArrayList<HashMap<String, String>>> homoOfEachRelation = new ArrayList<>();
             for (RelationalAtom originalRA : originalBodyWithRelationR) {
 
@@ -156,16 +168,17 @@ public class CQMinimizer {
             }
         }
 
-
         System.out.println("Homo: " + homo);
 
+        // if there is no any valid mapping
+        // then it means the query homomorphism does not exists
         if (homo.size() == 0) {
             return false;
         }
 
+        /* A depth-first search (DFS) algorithm is applied to explore all the possible valid mappings */
 
-        // A dfs algorithm trying to explore all the possible mappings
-
+        // put the possibilities from different relations into a same group to decompose the complexity of structure
         ArrayList<ArrayList<HashMap<String, String>>> groups = new ArrayList<>();
         for (ArrayList<ArrayList<HashMap<String, String>>> homoOfEachRelation : homo) {
             groups.addAll(homoOfEachRelation);
@@ -179,16 +192,31 @@ public class CQMinimizer {
     }
 
     public static ArrayList<HashMap<String, String>> getValidHomoCombinations(ArrayList<ArrayList<HashMap<String, String>>> groups) {
+        // initialize an empty list to store all valid combinations.
         ArrayList<HashMap<String, String>> validHomoCombinations = new ArrayList<>();
+
+        // use dfs algorithm to go over all the combinations
+        // and save the valid combinations into validHomoCombinations
         dfs(groups, 0, new HashMap<>(), validHomoCombinations);
         return validHomoCombinations;
     }
 
+    /**
+     * Depth-first algorithm used to recursively explore all the possible combinations of query homomorphism mapping between
+     * different atoms.
+     * @param groups
+     * @param groupIndex current level of exploring
+     * @param currentHomoCombination
+     * @param validHomoCombinations
+     */
     public static void dfs(ArrayList<ArrayList<HashMap<String, String>>> groups,
                       int groupIndex, HashMap<String, String> currentHomoCombination,
                       ArrayList<HashMap<String, String>> validHomoCombinations) {
+
+        // All groups have been processed
         if (groupIndex == groups.size()) {
-            // All groups have been processed
+            // this combination of mapping from different atom must be valid
+            // then save it as one of the correct query homomorphism
             validHomoCombinations.add(currentHomoCombination);
             return;
         }
