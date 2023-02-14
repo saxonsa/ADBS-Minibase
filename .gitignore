@@ -1,3 +1,5 @@
 .DS_Store
 .idea/
 Minibase/target/
+Minibase/data/evaluation/output/
+Minibase/data/minimization/output/
