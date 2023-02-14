@@ -237,6 +237,11 @@ public class CQMinimizer {
         }
     }
 
+    /**
+     * Merge the new rules of query homomorphism into the current rules
+     * @param current current rules of query homomorphism
+     * @param choice coming rules of query homomorphism
+     */
     public static void addHomoCombination(HashMap<String, String> current, HashMap<String, String> choice) {
         for (Map.Entry<String, String> entry : choice.entrySet()) {
             if (!current.containsKey(entry.getKey())) {
@@ -245,14 +250,22 @@ public class CQMinimizer {
         }
     }
 
+    /**
+     * Check whether the future query homomorphism trying to merge the new rules will be valid or not
+     * @param homoCombination the current query homomorphism to be checked
+     * @param choice coming of query homomorphism
+     * @return validation check
+     */
     public static boolean checkValidHomoCombination(HashMap<String, String> homoCombination, HashMap<String, String> choice) {
+        // use a deep copy of homoCombination to check the validation
+        // avoid changing the original Content
+        // there will be an additional step to merge them later
         HashMap<String, String> beforeHomoCombination = new HashMap<>(homoCombination);
         for (Map.Entry<String, String> entry : choice.entrySet()) {
             if (!beforeHomoCombination.containsKey(entry.getKey())) {
                 beforeHomoCombination.put(entry.getKey(), entry.getValue());
             } else {
                 if (!Objects.equals(beforeHomoCombination.get(entry.getKey()), entry.getValue())) {
-                    // back track it to the situation when the new choice has not been merged
                     return false;
                 }
             }
