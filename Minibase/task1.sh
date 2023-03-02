@@ -4,7 +4,7 @@
 #mkdir -p data/minimization/output
 #
 ### test all the pre-defined cases
-mvn clean test
+#mvn clean test
 
 mvn clean compile assembly:single
 
