@@ -4,6 +4,7 @@ import ed.inf.adbs.minibase.base.*;
 import ed.inf.adbs.minibase.parser.QueryParser;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -339,6 +340,15 @@ public class CQMinimizer {
      * write minimized query into output/query{?} file
      */
     public static void outputMinimizedQuery(Query query, String filename) {
+        // create output folder if it does not exist (data/minimization/output)
+        File outputDir = new File("data/minimization/output");
+        if (!outputDir.exists()) {
+            boolean result = outputDir.mkdir();
+            if (!result) {
+                System.err.println("Fail to create output folder!");
+            }
+        }
+
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
             writer.write(query.toString() + '\n');

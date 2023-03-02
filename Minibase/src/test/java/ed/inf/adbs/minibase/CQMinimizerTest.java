@@ -16,8 +16,10 @@ public class CQMinimizerTest {
         File[] files = directory.listFiles();
         assert files != null;
 
+        // iterate all the files inside input/ folder and run CQMinimization
+        // and finally compare it with the corresponding one inside expected output folder
         for (File file : files) {
-           String inputPath = file.getPath();
+            String inputPath = file.getPath();
             String outputPath = inputPath.replaceAll("input", "output");
 
             // perform CQ
