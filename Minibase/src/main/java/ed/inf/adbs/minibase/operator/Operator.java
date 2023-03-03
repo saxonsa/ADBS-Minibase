@@ -1,6 +1,6 @@
-package ed.inf.adbs.minibase.base.operator;
+package ed.inf.adbs.minibase.operator;
 
-import ed.inf.adbs.minibase.base.Tuple;
+import ed.inf.adbs.minibase.operator.common.Tuple;
 
 /**
  * interface of Operator
