@@ -13,9 +13,9 @@ import java.util.Scanner;
 
 public class ScanOperator extends Operator{
 
-    private RelationalAtom relationalAtom;
+    private final RelationalAtom relationalAtom;
     private Schema schema = null;
-    private Catalog catalog = Catalog.getInstance();
+    private final Catalog catalog = Catalog.getInstance();
     private Scanner scanner = null;
 
     public ScanOperator(RelationalAtom relationalAtom) {
@@ -86,11 +86,18 @@ public class ScanOperator extends Operator{
 
     @Override
     public void dump() {
-        while (this.scanner.hasNextLine()) {
-            writeFile(new Tuple(this.schema, scanner.nextLine()), catalog.getOutputFile());
+        Tuple tuple = this.getNextTuple();
+        while (tuple != null) {
+            writeFile(tuple, catalog.getOutputFile());
+            tuple = this.getNextTuple();
         }
     }
 
+    /**
+     * printStream for testing the operator
+     * @param t
+     * @param outputFile
+     */
     public void writeFile(Tuple t, String outputFile) {
         FileWriter fw = null;
         BufferedWriter bw = null;
