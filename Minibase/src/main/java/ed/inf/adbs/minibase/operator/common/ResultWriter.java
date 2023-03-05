@@ -8,7 +8,6 @@ import java.nio.file.Paths;
 /**
  * The printStream to write the result to CSV file designed following Singleton Pattern
  */
-//  singleton filewriter that handles writing to the output file.
 public class ResultWriter {
 
     private static FileWriter fileWriter;
@@ -17,21 +16,26 @@ public class ResultWriter {
         if (fileWriter != null)
             return fileWriter;
 
-        else throw new UnsupportedOperationException("The file writer still hasn't been initialised!! ");
+        else throw new UnsupportedOperationException("The file writer is not initialized!");
     }
 
-    public static void initialiseOutputWriter(String outputFileName) throws IOException {
-        File outFile = Paths.get(outputFileName).toFile();
-        outFile.createNewFile();
+    /**
+     * Initialize the ResultWriter with the target output file
+     *
+     * @param outputFile global output CSV file to save result
+     * @throws IOException
+         * if the named file exists but is a directory rather than a regular file,
+         * does not exist but cannot be created,
+         * or cannot be opened for any other reason
+     */
+    public static void init(String outputFile) throws IOException {
+        File saveFile = Paths.get(outputFile).toFile();
+        saveFile.createNewFile();
 
-        fileWriter = new FileWriter(outputFileName);
+        fileWriter = new FileWriter(outputFile);
     }
 
     private ResultWriter() {
 
-    }
-
-    public static boolean outputWriterInitialised() {
-        return fileWriter != null;
     }
 }

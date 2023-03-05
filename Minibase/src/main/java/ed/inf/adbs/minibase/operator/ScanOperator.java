@@ -9,6 +9,7 @@ import ed.inf.adbs.minibase.operator.db.Tuple;
 import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -18,7 +19,6 @@ public class ScanOperator extends Operator{
     private final RelationalAtom relationalAtom;
     private final Catalog catalog = Catalog.getCatalog();
     private Scanner scanner = null;
-    private Schema schema;
 
     public ScanOperator(RelationalAtom relationalAtom) {
         this.relationalAtom = relationalAtom;
@@ -39,7 +39,6 @@ public class ScanOperator extends Operator{
     public Tuple getNextTuple() {
        if (scanner.hasNextLine()) {
            Tuple t = parseDBLineToTuple(scanner.nextLine());
-           System.out.println(t.getAttributes());
            return t;
        } else {
            scanner.close();
@@ -59,6 +58,7 @@ public class ScanOperator extends Operator{
 
     public Tuple parseDBLineToTuple(String dbLine) {
         String[] values = dbLine.split(",");
+//        System.out.println("values: " + Arrays.toString(values));
         return new Tuple(IntStream.range(0, values.length)
                 .mapToObj(item -> {
                     try {

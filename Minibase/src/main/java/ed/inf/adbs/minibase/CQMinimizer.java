@@ -94,9 +94,9 @@ public class CQMinimizer {
             minimizedRelation.add(atom.getName());
         }
         if (!minimizedRelation.containsAll(originalRelation)) {
-            System.out.println("relation of original body: " + originalRelation);
-            System.out.println("relation of minimized body: " + minimizedRelation);
-            System.out.println("cannot remove this atom due to the relation table does not match!");
+//            System.out.println("relation of original body: " + originalRelation);
+//            System.out.println("relation of minimized body: " + minimizedRelation);
+//            System.out.println("cannot remove this atom due to the relation table does not match!");
             return false;
         }
 
@@ -169,7 +169,7 @@ public class CQMinimizer {
             }
         }
 
-        System.out.println("Homo: " + homo);
+//        System.out.println("Homo: " + homo);
 
         // if there is no any valid mapping
         // then it means the query homomorphism does not exists
@@ -187,7 +187,7 @@ public class CQMinimizer {
 
         ArrayList<HashMap<String, String>> validHomoCombinations = getValidHomoCombinations(groups);
 
-        System.out.println("query homomorphism: " + validHomoCombinations);
+//        System.out.println("query homomorphism: " + validHomoCombinations);
 
         return validHomoCombinations.size() > 0;
     }

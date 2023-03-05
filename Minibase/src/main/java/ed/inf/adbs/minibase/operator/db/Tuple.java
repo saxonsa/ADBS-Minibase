@@ -9,11 +9,6 @@ import java.util.stream.Collectors;
 public class Tuple {
     private final List<Constant> attributes;;
 
-    /** initialize tuple
-     * use schema to indicate the type of values
-     * ep. values: 1, "test", 2
-     * ep. this.attributes: [1, "test", 2]
-     */
     public Tuple(List<Constant> attributes) {
         this.attributes = attributes;
     }

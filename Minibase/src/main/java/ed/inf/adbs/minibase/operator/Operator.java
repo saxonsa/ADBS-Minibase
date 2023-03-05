@@ -15,25 +15,20 @@ public abstract class Operator {
     public abstract void reset();
 
 
-    public void dump() {
-        Tuple nextTuple;
-        FileWriter outWriter = null;
-        if (ResultWriter.outputWriterInitialised()) {
-            outWriter = ResultWriter.getFileWriter();
-        }
-        try {
-            while ((nextTuple = getNextTuple()) != null) {
+    public void dump() throws IOException {
+        Tuple tuple;
+        FileWriter csvWriter = ResultWriter.getFileWriter();
 
-                if (outWriter != null) {
-                    outWriter.write(nextTuple + "\n");
-                } else {
-                    System.out.println(nextTuple);
-                }
+        while ((tuple = getNextTuple()) != null) {
+
+            if (csvWriter != null) {
+                csvWriter.write(tuple + "\n");
+            } else {
+                System.out.println(tuple);
             }
-            if (outWriter != null)
-                outWriter.flush();
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
         }
+        if (csvWriter != null)
+            csvWriter.flush();
+
     }
 }

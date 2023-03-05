@@ -22,7 +22,9 @@ public class Catalog {
 
     private Catalog() {};
 
-    // generate instance with double check mechanism, safe for thread pool
+    /**
+     * generate instance with double check mechanism, safe for thread pool
+    */
     public static Catalog getCatalog() {
         if (null == catalog) {
             synchronized (Catalog.class) {
@@ -33,6 +35,7 @@ public class Catalog {
         }
         return catalog;
     }
+
 
     public void init(String databaseDir) {
         this.databaseDir = databaseDir;
