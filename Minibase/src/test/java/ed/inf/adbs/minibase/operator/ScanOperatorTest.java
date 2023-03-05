@@ -4,7 +4,6 @@ import ed.inf.adbs.minibase.base.Query;
 import ed.inf.adbs.minibase.base.RelationalAtom;
 import ed.inf.adbs.minibase.operator.common.ResultWriter;
 import ed.inf.adbs.minibase.operator.db.Catalog;
-import ed.inf.adbs.minibase.operator.db.Tuple;
 import ed.inf.adbs.minibase.parser.QueryParser;
 import ed.inf.adbs.minibase.utils.CSVComparator;
 import org.junit.Before;

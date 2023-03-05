@@ -17,6 +17,10 @@ public class Tuple {
         return attributes;
     }
 
+    /**
+     * Transform tuples to String using to output to CSV file
+     * @return format string with ", " deliminator expected to align with format of given output csv
+     */
     @Override
     public String toString() {
         return this.attributes.stream().map(Constant::toString).collect(Collectors.joining(", "));
