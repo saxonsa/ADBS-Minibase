@@ -7,6 +7,10 @@ public class IntegerConstant extends Constant {
         this.value = value;
     }
 
+    public IntegerConstant(String value) {
+        this.value = Integer.valueOf(value);
+    }
+
     public Integer getValue() {
         return value;
     }
