@@ -1,6 +1,12 @@
 package ed.inf.adbs.minibase;
 
+import ed.inf.adbs.minibase.operator.common.Interpreter;
+import ed.inf.adbs.minibase.operator.db.Catalog;
+import ed.inf.adbs.minibase.utils.CSVComparator;
+import org.junit.Before;
 import org.junit.Test;
+
+import java.io.IOException;
 
 import static org.junit.Assert.assertTrue;
 
@@ -9,6 +15,19 @@ import static org.junit.Assert.assertTrue;
  */
 
 public class MinibaseTest {
+    private final Catalog catalog = Catalog.getCatalog();
 
+    @Before
+    public void setupCatalog() {
+        catalog.init("data/evaluation/db");
+    }
+
+    @Test
+    public void ScanTaskTest() throws IOException {
+        Interpreter interpreter = new Interpreter("data/evaluation/input/query1.txt", "data/evaluation/output/query1.csv");
+        interpreter.dump();
+        boolean result = CSVComparator.areCSVFilesEqual("data/evaluation/output/query1.csv", "data/evaluation/expected_output/query1.csv");
+        assertTrue(result);
+    }
 }
 
