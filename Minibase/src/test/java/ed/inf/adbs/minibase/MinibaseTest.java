@@ -26,8 +26,14 @@ public class MinibaseTest {
     public void ScanTaskTest() throws IOException {
         Interpreter interpreter = new Interpreter("data/evaluation/input/query1.txt", "data/evaluation/output/query1.csv");
         interpreter.dump();
-        boolean result = CSVComparator.areCSVFilesEqual("data/evaluation/output/query1.csv", "data/evaluation/expected_output/query1.csv");
-        assertTrue(result);
+        assertTrue(CSVComparator.areCSVFilesEqual("data/evaluation/output/query1.csv", "data/evaluation/expected_output/query1.csv"));
+    }
+
+    @Test
+    public void SelectTaskTest() throws IOException {
+        Interpreter interpreter = new Interpreter("data/evaluation/input/query2.txt", "data/evaluation/output/query2.csv");
+        interpreter.dump();
+        assertTrue(CSVComparator.areCSVFilesEqual("data/evaluation/output/query2.csv", "data/evaluation/expected_output/query2.csv"));
     }
 }
 

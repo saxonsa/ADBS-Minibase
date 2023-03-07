@@ -3,7 +3,6 @@ package ed.inf.adbs.minibase.operator;
 import ed.inf.adbs.minibase.base.Constant;
 import ed.inf.adbs.minibase.base.RelationalAtom;
 import ed.inf.adbs.minibase.operator.db.Catalog;
-import ed.inf.adbs.minibase.operator.db.Schema;
 import ed.inf.adbs.minibase.operator.db.Tuple;
 
 import java.io.*;
@@ -16,7 +15,7 @@ import java.util.stream.IntStream;
 
 public class ScanOperator extends Operator{
 
-    private final RelationalAtom relationalAtom;
+    public RelationalAtom relationalAtom;
     private final Catalog catalog = Catalog.getCatalog();
     private Scanner scanner = null;
 
@@ -38,8 +37,7 @@ public class ScanOperator extends Operator{
     @Override
     public Tuple getNextTuple() {
        if (scanner.hasNextLine()) {
-           Tuple t = parseDBLineToTuple(scanner.nextLine());
-           return t;
+           return parseDBLineToTuple(scanner.nextLine());
        } else {
            scanner.close();
        }
@@ -73,5 +71,9 @@ public class ScanOperator extends Operator{
                         throw new RuntimeException(e);
                     }
                 }).collect(Collectors.toList()));
+    }
+
+    public RelationalAtom getRelationalAtom() {
+        return relationalAtom;
     }
 }
