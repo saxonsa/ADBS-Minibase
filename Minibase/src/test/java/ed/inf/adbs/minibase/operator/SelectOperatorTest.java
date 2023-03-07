@@ -31,4 +31,11 @@ public class SelectOperatorTest {
         interpreter.dump();
         assertTrue(CSVComparator.areCSVFilesEqual("data/evaluation/output/select_q2.csv", "data/evaluation/expected_output/select_q2.csv"));
     }
+
+    @Test
+    public void testSelectTask3() throws IOException {
+        Interpreter interpreter = new Interpreter("data/evaluation/input/select_q3.txt", "data/evaluation/output/select_q3.csv");
+        interpreter.dump();
+        assertTrue(CSVComparator.areCSVFilesEqual("data/evaluation/output/select_q3.csv", "data/evaluation/expected_output/select_q3.csv"));
+    }
 }
