@@ -19,7 +19,13 @@ public class StringConstant extends Constant {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (!super.equals(o)) return false;
+        else return ((StringConstant) o).getValue().equals(this.getValue());
+    }
+
+    @Override
     public int hashCode() {
-        return Objects.hashCode(value);
+        return Objects.hash(this.value);
     }
 }

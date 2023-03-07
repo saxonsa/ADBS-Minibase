@@ -1,12 +1,9 @@
 package ed.inf.adbs.minibase.operator;
 
 import ed.inf.adbs.minibase.base.ComparisonAtom;
-import ed.inf.adbs.minibase.base.ComparisonOperator;
 import ed.inf.adbs.minibase.base.RelationalAtom;
-import ed.inf.adbs.minibase.base.Term;
 import ed.inf.adbs.minibase.operator.common.SelectionEvaluator;
 import ed.inf.adbs.minibase.operator.db.Tuple;
-import jdk.nashorn.internal.runtime.regexp.joni.constants.StackPopLevel;
 
 import java.util.List;
 
@@ -41,7 +38,6 @@ public class SelectOperator extends Operator {
     private boolean checkTuplePassAllPredicates(Tuple tuple) {
 
         return predicates.stream().allMatch(predicate -> {
-            System.out.println("predicates: " + predicate);
             SelectionEvaluator selectionEvaluator = new SelectionEvaluator(tuple, predicate, relationalAtom);
             return selectionEvaluator.check();
         });
