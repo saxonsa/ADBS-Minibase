@@ -1,5 +1,7 @@
 package ed.inf.adbs.minibase.base;
 
+import java.util.Objects;
+
 public class IntegerConstant extends Constant {
     private Integer value;
 
@@ -18,5 +20,10 @@ public class IntegerConstant extends Constant {
     @Override
     public String toString() {
         return value.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(value);
     }
 }
