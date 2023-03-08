@@ -31,17 +31,37 @@ public class QueryPlan {
         List<ComparisonAtom> comparisonAtoms = query.getBody().stream()
                         .filter(ComparisonAtom.class::isInstance)
                                 .map(ComparisonAtom.class::cast).collect(Collectors.toList());
+
+        // transform Q(x,y) :- R(x, y, 'adbs') to Q(x, y) :- R(x, y, z), z = 'adbs'
+
+        // modify relational Atom from the atom like "R(x, y, 'adbs')" to the atom like R(x, y, z)
+        // from now on, we need to pass the new relationalAtom to the next Operator
+        RelationalAtom reconstructedRA = relationalAtoms.get(0);
+        for (int i = 0; i < reconstructedRA.getTerms().size(); i++) {
+            if (reconstructedRA.getTerms().get(i) instanceof Constant) {
+                // generate a new letter
+                String newLetter = generateNewLetterForConstantTerm();
+                while(reconstructedRA.getTerms().contains(newLetter)) {
+                    newLetter = generateNewLetterForConstantTerm();
+                }
+
+                // replace the Constant with the new generated variable and add the pair as Comparison atom
+                comparisonAtoms.add(new ComparisonAtom(new Variable(newLetter), reconstructedRA.getTerms().get(i), ComparisonOperator.EQ));
+                reconstructedRA.getTerms().set(i, new Variable(newLetter));
+            }
+        }
+
         if (comparisonAtoms.size() > 0) {
-            root = new SelectOperator(root, relationalAtoms.get(0), comparisonAtoms);
+            root = new SelectOperator(root, reconstructedRA, comparisonAtoms);
         }
 
         // check if the order of head has been changed, or if any terms in the head have been projected away
         // if so, create a ProjectOperator as a root
         Head head = query.getHead();
-        if ((head.getVariables().size() < relationalAtoms.get(0).getTerms().size()) ||
-                checkQueryHeadOrderChanged(head.getVariables(), relationalAtoms.get(0))) {
+        if ((head.getVariables().size() < reconstructedRA.getTerms().size()) ||
+                checkQueryHeadOrderChanged(head.getVariables(), reconstructedRA)) {
             // some variables have been projected away
-            root = new ProjectOperator(root, query, relationalAtoms.get(0));
+            root = new ProjectOperator(root, query, reconstructedRA);
         }
     }
 
@@ -57,6 +77,17 @@ public class QueryPlan {
             }
         }
         return false;
+    }
+
+    private String generateNewLetterForConstantTerm() {
+        String alphabet = "abcdefghijklmnopqrstuvwxyz";
+        StringBuilder stringBuffer = new StringBuilder();
+        // generate a random number between 0 and length of characters set
+        int randomIndex = (int)(Math.random() * alphabet.length());
+        stringBuffer.append(alphabet.charAt(randomIndex));
+        randomIndex = (int)(Math.random() * alphabet.length());
+        stringBuffer.append(alphabet.charAt(randomIndex));
+        return new String(stringBuffer);
     }
 
     public Operator getRoot() {
