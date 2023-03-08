@@ -31,4 +31,18 @@ public class ProjectOperatorTest {
         interpreter.dump();
         assertTrue(CSVComparator.areCSVFilesEqual("data/evaluation/output/project_q2.csv", "data/evaluation/expected_output/project_q2.csv"));
     }
+
+    @Test
+    public void testProjectTask3() throws IOException {
+        Interpreter interpreter = new Interpreter("data/evaluation/input/project_q3.txt", "data/evaluation/output/project_q3.csv");
+        interpreter.dump();
+        assertTrue(CSVComparator.areCSVFilesEqual("data/evaluation/output/project_q3.csv", "data/evaluation/expected_output/project_q3.csv"));
+    }
+
+    @Test
+    public void testProjectTask4() throws IOException {
+        Interpreter interpreter = new Interpreter("data/evaluation/input/project_q4.txt", "data/evaluation/output/project_q4.csv");
+        interpreter.dump();
+        assertTrue(CSVComparator.areCSVFilesEqual("data/evaluation/output/project_q4.csv", "data/evaluation/expected_output/project_q4.csv"));
+    }
 }
