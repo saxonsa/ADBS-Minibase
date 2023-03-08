@@ -1,9 +1,12 @@
 package ed.inf.adbs.minibase.operator.db;
 
 import ed.inf.adbs.minibase.base.Constant;
+import ed.inf.adbs.minibase.base.StringConstant;
+import ed.inf.adbs.minibase.base.Variable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Tuple {
@@ -24,5 +27,18 @@ public class Tuple {
     @Override
     public String toString() {
         return this.attributes.stream().map(Constant::toString).collect(Collectors.joining(", "));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Tuple tuple = (Tuple) o;
+        return attributes.equals(tuple.getAttributes());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(attributes);
     }
 }

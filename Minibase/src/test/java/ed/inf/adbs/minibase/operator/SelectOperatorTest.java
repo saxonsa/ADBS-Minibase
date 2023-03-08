@@ -11,11 +11,11 @@ import java.io.IOException;
 import static org.junit.Assert.assertTrue;
 
 public class SelectOperatorTest {
-    private Catalog catalog = null;
+    private final Catalog catalog = Catalog.getCatalog();
 
     @Before
-    public void setup() {
-        catalog = Catalog.getCatalog();
+    public void setupCatalog() {
+        catalog.init("data/evaluation/db");
     }
 
     @Test
