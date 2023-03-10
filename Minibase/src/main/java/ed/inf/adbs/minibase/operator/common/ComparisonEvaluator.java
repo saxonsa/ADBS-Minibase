@@ -16,7 +16,7 @@ public class ComparisonEvaluator {
         this.relationalAtom = relationalAtom;
     }
 
-    public boolean checkSelectionCondition() {
+    public boolean check() {
         Term term1 = predicate.getTerm1();
         Term term2 = predicate.getTerm2();
         ComparisonOperator op = predicate.getOp();

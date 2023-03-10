@@ -58,7 +58,7 @@ public class QueryPlan {
             }
             mergedRelationalAtom = relationalAtoms.get(0);
         } else { // join
-            // recursively construct join operator
+            // construct join operator in recursive manner
             root = constructJoinOperator(root, relationalAtomRAs, comparisonAtoms, 1);
         }
 
@@ -97,6 +97,14 @@ public class QueryPlan {
         return new String(stringBuffer);
     }
 
+    /**
+     * A java polymorphism class to extract `selection condition` for the given relational atom from predicates
+     * @param ra relation to check if any predicates work on this relation only
+     * @param predicates the initial predicates resolved from query parser used to extract selection condition
+     *                   for the given relational atom
+     * @return the extracted predicates that contain selection condition on the given relational atom
+     *          Or we say the relational atom contains the variables of both terms in the result predicate
+     */
     private List<ComparisonAtom> extractPredicates(RelationalAtom ra, List<ComparisonAtom> predicates) {
         List<ComparisonAtom> extractedPredicates = new ArrayList<>();
         for (ComparisonAtom predicate : predicates) {
@@ -111,6 +119,14 @@ public class QueryPlan {
         return extractedPredicates;
     }
 
+    /**
+     * A java polymorphism class to extract `join condition` from predicates
+     * Main idea: If the predicates involves variables(terms) from two relations, then it's a join condition
+     * @param ra1 relation of left child
+     * @param ra2 relation of right child
+     * @param predicates the initial predicates resolved from query parser used to extract join condition
+     * @return the extracted predicates that contain join condition only
+     */
     private List<ComparisonAtom> extractPredicates(RelationalAtom ra1, RelationalAtom ra2, List<ComparisonAtom> predicates) {
         List<ComparisonAtom> extractedPredicates = new ArrayList<>();
         for (ComparisonAtom predicate : predicates) {
@@ -124,6 +140,15 @@ public class QueryPlan {
         return extractedPredicates;
     }
 
+    /**
+     * Construct join operator in recursive manner
+     * @param root use the current joinOperator as leftChild
+     * @param relationalAtoms The relational atoms after processed the implicit constant selection built in the tuples
+     *                        such as: R(x, y, 4) has already been processed to R(x, y, zz), zz = 4
+     * @param predicates the predicates with implicit constant selection, which includes zz=4 for instance.
+     * @param rightChildIndex the index to mark the next right child(relation)
+     * @return The root join Operator that could all the relations regarding the given query
+     */
     private Operator constructJoinOperator(Operator root, List<RelationalAtom> relationalAtoms,
                                            List<ComparisonAtom> predicates, int rightChildIndex) {
         if (rightChildIndex == relationalAtoms.size()) {
