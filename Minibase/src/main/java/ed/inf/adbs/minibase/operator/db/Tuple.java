@@ -1,8 +1,6 @@
 package ed.inf.adbs.minibase.operator.db;
 
 import ed.inf.adbs.minibase.base.Constant;
-import ed.inf.adbs.minibase.base.StringConstant;
-import ed.inf.adbs.minibase.base.Variable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,10 +8,18 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Tuple {
-    private final List<Constant> attributes;;
+    private List<Constant> attributes = new ArrayList<>();
 
     public Tuple(List<Constant> attributes) {
         this.attributes = attributes;
+    }
+
+    /**
+     * A construct to glue two tuples togethers for supporting join operator
+     */
+    public Tuple(Tuple t1, Tuple t2) {
+        this.attributes.addAll(t1.getAttributes());
+        this.attributes.addAll(t2.getAttributes());
     }
 
     public List<Constant> getAttributes() {
