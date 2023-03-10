@@ -3,27 +3,29 @@ package ed.inf.adbs.minibase.operator.common;
 import ed.inf.adbs.minibase.base.*;
 import ed.inf.adbs.minibase.operator.db.Tuple;
 
-public class SelectionEvaluator {
+import java.util.function.Predicate;
+
+public class ComparisonEvaluator {
     private final Tuple tuple;
     private final ComparisonAtom predicate;
     private final RelationalAtom relationalAtom;
 
-    public SelectionEvaluator(Tuple tuple, ComparisonAtom predicate, RelationalAtom relationalAtom) {
+    public ComparisonEvaluator(Tuple tuple, ComparisonAtom predicate, RelationalAtom relationalAtom) {
         this.tuple = tuple;
         this.predicate = predicate;
         this.relationalAtom = relationalAtom;
     }
 
-    public boolean check() {
+    public boolean checkSelectionCondition() {
         Term term1 = predicate.getTerm1();
         Term term2 = predicate.getTerm2();
         ComparisonOperator op = predicate.getOp();
 
-        Constant constTerm1 = term1 instanceof Variable ? tuple.getAttributes().get(relationalAtom.getTerms().indexOf(term1))
-                : (Constant) term1;
+        Constant constTerm1 = term1 instanceof Variable ?
+                tuple.getAttributes().get(relationalAtom.getTerms().indexOf(term1)) : (Constant) term1;
 
-        Constant constTerm2 = term2 instanceof Variable ? tuple.getAttributes().get(relationalAtom.getTerms().indexOf(term2))
-                : (Constant) term2;
+        Constant constTerm2 = term2 instanceof Variable ?
+                tuple.getAttributes().get(relationalAtom.getTerms().indexOf(term2)) : (Constant) term2;
 
         if (constTerm1 instanceof IntegerConstant) {
             int value1 = ((IntegerConstant) constTerm1).getValue();

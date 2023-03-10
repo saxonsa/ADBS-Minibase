@@ -46,7 +46,8 @@ public class QueryPlan {
                 }
 
                 // replace the Constant with the new generated variable and add the pair as Comparison atom
-                comparisonAtoms.add(new ComparisonAtom(new Variable(newLetter), reconstructedRA.getTerms().get(i), ComparisonOperator.EQ));
+                comparisonAtoms.add(new ComparisonAtom(
+                        new Variable(newLetter), reconstructedRA.getTerms().get(i), ComparisonOperator.EQ));
                 reconstructedRA.getTerms().set(i, new Variable(newLetter));
             }
         }
