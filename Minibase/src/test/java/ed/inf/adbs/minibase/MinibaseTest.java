@@ -49,5 +49,19 @@ public class MinibaseTest {
         interpreter.dump();
         assertTrue(CSVComparator.areCSVFilesEqual("data/evaluation/output/query4.csv", "data/evaluation/expected_output/query4.csv"));
     }
+
+    @Test
+    public void ProjectTaskTestQ5() throws IOException {
+        Interpreter interpreter = new Interpreter("data/evaluation/input/query5.txt", "data/evaluation/output/query5.csv");
+        interpreter.dump();
+        assertTrue(CSVComparator.areCSVFilesEqual("data/evaluation/output/query5.csv", "data/evaluation/expected_output/query5.csv"));
+    }
+
+    @Test
+    public void ProjectTaskTestQ6() throws IOException {
+        Interpreter interpreter = new Interpreter("data/evaluation/input/query6.txt", "data/evaluation/output/query6.csv");
+        interpreter.dump();
+        assertTrue(CSVComparator.areCSVFilesEqual("data/evaluation/output/query6.csv", "data/evaluation/expected_output/query6.csv"));
+    }
 }
 

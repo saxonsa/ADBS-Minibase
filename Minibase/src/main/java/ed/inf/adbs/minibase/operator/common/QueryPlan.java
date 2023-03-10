@@ -1,19 +1,16 @@
 package ed.inf.adbs.minibase.operator.common;
 
 import ed.inf.adbs.minibase.base.*;
-import ed.inf.adbs.minibase.operator.Operator;
-import ed.inf.adbs.minibase.operator.ProjectOperator;
-import ed.inf.adbs.minibase.operator.ScanOperator;
-import ed.inf.adbs.minibase.operator.SelectOperator;
+import ed.inf.adbs.minibase.operator.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class QueryPlan {
-    private Operator root;
+    private Operator root= null;
     private final Query query;
+    private RelationalAtom mergedRelationalAtom = null;
 
     public QueryPlan(Query query) {
         this.query = query;
@@ -25,44 +22,53 @@ public class QueryPlan {
         List<RelationalAtom> relationalAtoms = query.getBody().stream()
                 .filter(RelationalAtom.class::isInstance)
                 .map(RelationalAtom.class::cast).collect(Collectors.toList());
-        root = new ScanOperator(relationalAtoms.get(0));
 
         // check if there is any selection predicates, if it is, create a root for SelectOperator
         List<ComparisonAtom> comparisonAtoms = query.getBody().stream()
                         .filter(ComparisonAtom.class::isInstance)
                                 .map(ComparisonAtom.class::cast).collect(Collectors.toList());
 
-        // transform Q(x,y) :- R(x, y, 'adbs') to Q(x, y) :- R(x, y, z), z = 'adbs'
-
-        // modify relational Atom from the atom like "R(x, y, 'adbs')" to the atom like R(x, y, z)
+        // modify all relational Atom from the atom like "R(x, y, 'adbs')" to the atom like R(x, y, z)
         // from now on, we need to pass the new relationalAtom to the next Operator
-        RelationalAtom reconstructedRA = relationalAtoms.get(0);
-        for (int i = 0; i < reconstructedRA.getTerms().size(); i++) {
-            if (reconstructedRA.getTerms().get(i) instanceof Constant) {
-                // generate a new letter
-                String newLetter = generateNewLetterForConstantTerm();
-                while(reconstructedRA.getTerms().contains(newLetter)) {
-                    newLetter = generateNewLetterForConstantTerm();
-                }
+        // such as: transform Q(x,y) :- R(x, y, 'adbs') to Q(x, y) :- R(x, y, z), z = 'adbs'
+        List<RelationalAtom> relationalAtomRAs = new ArrayList<>();
+        for (RelationalAtom reconstructedRA : relationalAtoms) {
+            for (int j = 0; j < reconstructedRA.getTerms().size(); j++) {
+                if (reconstructedRA.getTerms().get(j) instanceof Constant) {
+                    // generate a new letter
+                    String newLetter = generateNewLetterForConstantTerm();
+                    while (reconstructedRA.getTerms().contains(newLetter)) {
+                        newLetter = generateNewLetterForConstantTerm();
+                    }
 
-                // replace the Constant with the new generated variable and add the pair as Comparison atom
-                comparisonAtoms.add(new ComparisonAtom(
-                        new Variable(newLetter), reconstructedRA.getTerms().get(i), ComparisonOperator.EQ));
-                reconstructedRA.getTerms().set(i, new Variable(newLetter));
+                    // replace the Constant with the new generated variable and add the pair as Comparison atom
+                    comparisonAtoms.add(new ComparisonAtom(
+                            new Variable(newLetter), reconstructedRA.getTerms().get(j), ComparisonOperator.EQ));
+                    reconstructedRA.getTerms().set(j, new Variable(newLetter));
+                }
             }
+            relationalAtomRAs.add(reconstructedRA);
         }
 
-        if (comparisonAtoms.size() > 0) {
-            root = new SelectOperator(root, reconstructedRA, comparisonAtoms);
+        // extract select conditions and join conditions from newly constructed composed predicates
+        if (relationalAtomRAs.size() == 1) {
+            root = new ScanOperator(relationalAtoms.get(0));
+            if (comparisonAtoms.size() > 0) {
+                root = new SelectOperator(root, relationalAtoms.get(0), comparisonAtoms);
+            }
+            mergedRelationalAtom = relationalAtoms.get(0);
+        } else { // join
+            // recursively construct join operator
+            root = constructJoinOperator(root, relationalAtomRAs, comparisonAtoms, 1);
         }
 
         // check if the order of head has been changed, or if any terms in the head have been projected away
         // if so, create a ProjectOperator as a root
         Head head = query.getHead();
-        if ((head.getVariables().size() < reconstructedRA.getTerms().size()) ||
-                checkQueryHeadOrderChanged(head.getVariables(), reconstructedRA)) {
+        if ((head.getVariables().size() < mergedRelationalAtom.getTerms().size()) ||
+                checkQueryHeadOrderChanged(head.getVariables(), mergedRelationalAtom)) {
             // some variables have been projected away
-            root = new ProjectOperator(root, query, reconstructedRA);
+            root = new ProjectOperator(root, query, mergedRelationalAtom);
         }
     }
 
@@ -89,6 +95,67 @@ public class QueryPlan {
         randomIndex = (int)(Math.random() * alphabet.length());
         stringBuffer.append(alphabet.charAt(randomIndex));
         return new String(stringBuffer);
+    }
+
+    private List<ComparisonAtom> extractPredicates(RelationalAtom ra, List<ComparisonAtom> predicates) {
+        List<ComparisonAtom> extractedPredicates = new ArrayList<>();
+        for (ComparisonAtom predicate : predicates) {
+            Term term1 = predicate.getTerm1();
+            Term term2 = predicate.getTerm2();
+
+            if (!(((term1 instanceof Variable) && (!(ra.getTerms().contains(term1))))
+                || ((term2 instanceof Variable) && (!ra.getTerms().contains(term2))))) {
+                extractedPredicates.add(predicate);
+            }
+        }
+        return extractedPredicates;
+    }
+
+    private List<ComparisonAtom> extractPredicates(RelationalAtom ra1, RelationalAtom ra2, List<ComparisonAtom> predicates) {
+        List<ComparisonAtom> extractedPredicates = new ArrayList<>();
+        for (ComparisonAtom predicate : predicates) {
+            Term term1 = predicate.getTerm1();
+            Term term2 = predicate.getTerm2();
+
+            if (ra1.getTerms().contains(term1) && ra2.getTerms().contains(term2)) {
+                extractedPredicates.add(predicate);
+            }
+        }
+        return extractedPredicates;
+    }
+
+    private Operator constructJoinOperator(Operator root, List<RelationalAtom> relationalAtoms,
+                                           List<ComparisonAtom> predicates, int rightChildIndex) {
+        if (rightChildIndex == relationalAtoms.size()) {
+            return root;
+        }
+        if (rightChildIndex == 1) {
+            mergedRelationalAtom = relationalAtoms.get(0);
+            root = new ScanOperator(relationalAtoms.get(0));
+            // check selection condition for leftChild
+            List<ComparisonAtom> predicatesOnLeftChild = extractPredicates(relationalAtoms.get(0), predicates);
+            if (predicatesOnLeftChild.size() > 0) {
+                root = new SelectOperator(root, relationalAtoms.get(0), predicatesOnLeftChild);
+            }
+        }
+
+        Operator rightChild = new ScanOperator(relationalAtoms.get(rightChildIndex));
+        // check selection condition for rightChild
+        List<ComparisonAtom> predicatesOnRightChild = extractPredicates(relationalAtoms.get(rightChildIndex), predicates);
+        if (predicatesOnRightChild.size() > 0) {
+            rightChild = new SelectOperator(rightChild, relationalAtoms.get(rightChildIndex), predicatesOnRightChild);
+        }
+        List<ComparisonAtom> predicatesOnJoin = extractPredicates(mergedRelationalAtom, relationalAtoms.get(rightChildIndex), predicates);
+        mergedRelationalAtom = mergeRelationalAtom(mergedRelationalAtom, relationalAtoms.get(rightChildIndex));
+        root = new JoinOperator(root, rightChild, mergedRelationalAtom, predicatesOnJoin);
+        return constructJoinOperator(root, relationalAtoms, predicates, rightChildIndex + 1);
+    }
+
+    private RelationalAtom mergeRelationalAtom(RelationalAtom ra1, RelationalAtom ra2) {
+        List<Term> mergedTerms = new ArrayList<>();
+        mergedTerms.addAll(ra1.getTerms());
+        mergedTerms.addAll(ra2.getTerms());
+        return new RelationalAtom(ra1.getName()+ " " + ra2.getName(), mergedTerms);
     }
 
     public Operator getRoot() {
