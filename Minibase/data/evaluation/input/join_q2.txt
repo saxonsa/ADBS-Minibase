@@ -1,0 +1,1 @@
+Q(z, r) :- R(x, y, z), S(w, u, m), T(r, n), x = m, x = n, m = n, x = 5
