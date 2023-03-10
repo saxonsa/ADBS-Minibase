@@ -9,10 +9,10 @@ import java.util.List;
 public class JoinOperator extends Operator {
     private final Operator leftChild;
     private final Operator rightChild;
-    private RelationalAtom mergedRelationalAtom = null;
+    private final RelationalAtom mergedRelationalAtom;
     private final List<ComparisonAtom> predicates;
-    private Tuple leftTuple = null;
-    private Tuple rightTuple = null;
+    private Tuple leftTuple;
+    private Tuple rightTuple;
 
     public JoinOperator(Operator leftChild, Operator rightChild,
                         RelationalAtom mergedRelationalAtom, List<ComparisonAtom> predicates) {
@@ -55,7 +55,7 @@ public class JoinOperator extends Operator {
 
         return conditions.stream().allMatch(predicate -> {
             ComparisonEvaluator comparisonEvaluator = new ComparisonEvaluator(tuple, predicate, relationalAtom);
-            return comparisonEvaluator.checkSelectionCondition();
+            return comparisonEvaluator.check();
         });
     }
 }

@@ -39,7 +39,7 @@ public class SelectOperator extends Operator {
 
         return predicates.stream().allMatch(predicate -> {
             ComparisonEvaluator comparisonEvaluator = new ComparisonEvaluator(tuple, predicate, relationalAtom);
-            return comparisonEvaluator.checkSelectionCondition();
+            return comparisonEvaluator.check();
         });
     }
 }
