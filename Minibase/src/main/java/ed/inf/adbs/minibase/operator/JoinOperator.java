@@ -38,7 +38,7 @@ public class JoinOperator extends Operator {
                 rightTuple = rightChild.getNextTuple();
             }
 
-            if (checkTuplePassAllPredicates(mergedTuple, predicates, mergedRelationalAtom)) {
+            if (checkTuplePassAllPredicates(mergedTuple)) {
                 return mergedTuple;
             }
         }
@@ -51,10 +51,10 @@ public class JoinOperator extends Operator {
         rightChild.reset();
     }
 
-    private boolean checkTuplePassAllPredicates(Tuple tuple, List<ComparisonAtom> conditions, RelationalAtom relationalAtom) {
+    private boolean checkTuplePassAllPredicates(Tuple tuple) {
 
-        return conditions.stream().allMatch(predicate -> {
-            ComparisonEvaluator comparisonEvaluator = new ComparisonEvaluator(tuple, predicate, relationalAtom);
+        return predicates.stream().allMatch(predicate -> {
+            ComparisonEvaluator comparisonEvaluator = new ComparisonEvaluator(tuple, predicate, mergedRelationalAtom);
             return comparisonEvaluator.check();
         });
     }

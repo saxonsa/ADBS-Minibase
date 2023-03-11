@@ -65,6 +65,11 @@ public class QueryPlan {
         // check if the order of head has been changed, or if any terms in the head have been projected away
         // if so, create a ProjectOperator as a root
         Head head = query.getHead();
+
+        if (head.getSumAggregate() != null) {
+            root = new SumOperator(root, head.getVariables(), head.getSumAggregate(), mergedRelationalAtom);
+            return;
+        }
         if ((head.getVariables().size() < mergedRelationalAtom.getTerms().size()) ||
                 checkQueryHeadOrderChanged(head.getVariables(), mergedRelationalAtom)) {
             // some variables have been projected away
