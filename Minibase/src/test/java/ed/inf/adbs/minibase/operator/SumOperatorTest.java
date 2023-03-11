@@ -31,4 +31,11 @@ public class SumOperatorTest {
         interpreter.dump();
         assertTrue(CSVComparator.areCSVFilesEqual("data/evaluation/output/sum_q2.csv", "data/evaluation/expected_output/sum_q2.csv"));
     }
+
+    @Test
+    public void testSumOperatorQ3() throws IOException {
+        Interpreter interpreter = new Interpreter("data/evaluation/input/sum_q3.txt", "data/evaluation/output/sum_q3.csv");
+        interpreter.dump();
+        assertTrue(CSVComparator.areCSVFilesEqual("data/evaluation/output/sum_q3.csv", "data/evaluation/expected_output/sum_q3.csv"));
+    }
 }
