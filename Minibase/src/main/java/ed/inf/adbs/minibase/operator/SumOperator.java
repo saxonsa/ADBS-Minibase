@@ -49,7 +49,9 @@ public class SumOperator extends Operator {
                         sum += extractedSumTerm;
                     }
                     returned = true;
-                    return new Tuple(new ArrayList<>(sum));
+                    List<Constant> tupleElements = new ArrayList<>();
+                    tupleElements.add(new IntegerConstant(sum));
+                    return new Tuple(tupleElements);
                 }
             }
         }

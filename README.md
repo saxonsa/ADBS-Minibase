@@ -23,9 +23,17 @@ predicates lie in two different relational atoms, then this predicate will be vi
 On the other hand, if they lie in the same relational atom, it will be viewed as the selection condition.
 
 #### 3. Evaluate join condition
+##### For explicit predicates
 The extracted join conditions will be passed to the constructor when join operator is created.
 The left and right relational atoms will be merged and passed to constructor as well. After the next tuple of
 both left child and right child are all collected, the predicates of join condition will be checked on the merged tuples
 one by one. The details could be viewed on `Operator/JoinOperator.java`.
+
+##### For implicit condition
+If the given query follows the format `Q(x, t) :- R(x, y, z), S(x, w, t)`, then we need some strategy to extract the implicit
+condition `R.x = S.x`. In my implementation, the nested loop is applied to go through all the terms of every relational atom,
+and check if the repeated term exists in different relational atoms. If exists, it will change the name of term of one of the relational atom,
+and add a comparison condition on it. For example, we generate a random letter (For instace, `um` here). Then the relational atoms will be like
+`R(x, y, z), S(um, w, t)`, and a comparison atom `x = um` will be added to the predicates.
 
 ### Task3: Optimization
