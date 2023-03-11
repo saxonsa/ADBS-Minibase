@@ -32,4 +32,10 @@ public class JoinOperatorTest {
         assertTrue(CSVComparator.areCSVFilesEqual("data/evaluation/output/join_q2.csv", "data/evaluation/expected_output/join_q2.csv"));
     }
 
+    @Test
+    public void testJoinTask3() throws IOException {
+        Interpreter interpreter = new Interpreter("data/evaluation/input/join_q3.txt", "data/evaluation/output/join_q3.csv");
+        interpreter.dump();
+        assertTrue(CSVComparator.areCSVFilesEqual("data/evaluation/output/join_q3.csv", "data/evaluation/expected_output/join_q3.csv"));
+    }
 }
