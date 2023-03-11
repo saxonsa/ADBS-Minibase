@@ -13,6 +13,7 @@ public class SumOperator extends Operator {
     private List<Variable> groupVariables;
     private SumAggregate sumAggregate;
     private RelationalAtom relationalAtom;
+    private boolean returned;
 
     public SumOperator(Operator child, List<Variable> groupVariables,
                        SumAggregate sumAggregate, RelationalAtom relationalAtom) {
@@ -20,32 +21,38 @@ public class SumOperator extends Operator {
         this.groupVariables = groupVariables;
         this.sumAggregate = sumAggregate;
         this.relationalAtom = relationalAtom;
+        this.returned = false;
     }
 
     @Override
     public Tuple getNextTuple() {
-//        int sum = 0;
-//        Tuple tuple;
-//        if (groupVariables.size() == 0) {
-//            if (sumAggregate.getProductTerms().size() == 1) {
-//                Term singleSumTerm = sumAggregate.getProductTerms().get(0);
-//
-//                if (singleSumTerm instanceof IntegerConstant) { // SUM(int)
-//                    while(child.getNextTuple() != null) {
-//                        sum += ((IntegerConstant) singleSumTerm).getValue() * sum;
-//                    }
-//                    List<Constant> tupleElements = new ArrayList<>();
-//                    tupleElements.add(new IntegerConstant(sum));
-//                    return new Tuple(tupleElements);
-//                } else { // SUM(var)
-//                    while((tuple = child.getNextTuple()) != null) {
-//                        // fetch attribute of var
-//                        sum += extractSumTerm(tuple, singleSumTerm);
-//                    }
-//                    return new Tuple(new ArrayList<>(sum));
-//                }
-//            }
-//        }
+        int sum = 0;
+        Tuple tuple;
+        System.out.println("groupVariables: " + groupVariables);
+        if (!returned && groupVariables.size() == 0) {
+            if (sumAggregate.getProductTerms().size() == 1) {
+                Term singleSumTerm = sumAggregate.getProductTerms().get(0);
+
+                if (singleSumTerm instanceof IntegerConstant) { // SUM(int)
+                    while(child.getNextTuple() != null) {
+                        int times = ((IntegerConstant) singleSumTerm).getValue();
+                        sum += times;
+                    }
+                    List<Constant> tupleElements = new ArrayList<>();
+                    tupleElements.add(new IntegerConstant(sum));
+                    returned = true;
+                    return new Tuple(tupleElements);
+                } else { // SUM(var)
+                    while((tuple = child.getNextTuple()) != null) {
+                        // fetch attribute of var
+                        int extractedSumTerm = extractSumTerm(tuple, singleSumTerm);
+                        sum += extractedSumTerm;
+                    }
+                    returned = true;
+                    return new Tuple(new ArrayList<>(sum));
+                }
+            }
+        }
 
         return null;
     }
