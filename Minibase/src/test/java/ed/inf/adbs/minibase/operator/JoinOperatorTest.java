@@ -38,4 +38,11 @@ public class JoinOperatorTest {
         interpreter.dump();
         assertTrue(CSVComparator.areCSVFilesEqual("data/evaluation/output/join_q3.csv", "data/evaluation/expected_output/join_q3.csv"));
     }
+
+    @Test
+    public void testJoinTask4() throws IOException {
+        Interpreter interpreter = new Interpreter("data/evaluation/input/join_q4.txt", "data/evaluation/output/join_q4.csv");
+        interpreter.dump();
+        assertTrue(CSVComparator.areCSVFilesEqual("data/evaluation/output/join_q4.csv", "data/evaluation/expected_output/join_q4.csv"));
+    }
 }

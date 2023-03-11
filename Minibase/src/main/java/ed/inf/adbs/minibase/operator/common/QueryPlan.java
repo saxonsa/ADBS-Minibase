@@ -58,6 +58,28 @@ public class QueryPlan {
             }
             mergedRelationalAtom = relationalAtoms.get(0);
         } else { // join
+            // use nested loop to check if there are any implicit join condition
+            // if so, extract them and add to comparisonAtoms List
+            for (int i = 0; i < relationalAtomRAs.size(); i++) {
+                List<Term> terms = relationalAtomRAs.get(i).getTerms();
+                for (Term term : terms) {
+                    for (int j = i + 1; j < relationalAtomRAs.size(); j++) {
+                        if (relationalAtomRAs.get(j).getTerms().contains(term)) {
+                            // generate a new letter
+                            String newLetter = generateNewLetterForConstantTerm();
+                            while (relationalAtomRAs.get(j).getTerms().contains(newLetter)) {
+                                newLetter = generateNewLetterForConstantTerm();
+                            }
+
+                            comparisonAtoms.add(new ComparisonAtom(
+                                    term, new Variable(newLetter), ComparisonOperator.EQ));
+
+                            int sameTermIndex = relationalAtomRAs.get(j).getTerms().indexOf(term);
+                            relationalAtomRAs.get(j).getTerms().set(sameTermIndex, new Variable(newLetter));
+                        }
+                    }
+                }
+            }
             // construct join operator in recursive manner
             root = constructJoinOperator(root, relationalAtomRAs, comparisonAtoms, 1);
         }
