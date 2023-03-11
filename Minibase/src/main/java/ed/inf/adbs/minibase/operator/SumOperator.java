@@ -44,43 +44,21 @@ public class SumOperator extends Operator {
                         int times = ((IntegerConstant) singleSumTerm).getValue();
                         sum += times;
                     }
-                    List<Constant> tupleElements = new ArrayList<>();
-                    tupleElements.add(new IntegerConstant(sum));
-                    returned = true;
-                    return new Tuple(tupleElements);
                 } else { // SUM(var)
                     while((tuple = child.getNextTuple()) != null) {
                         // fetch attribute of var
                         int extractedSumTerm = extractSumTerm(tuple, singleSumTerm);
                         sum += extractedSumTerm;
                     }
-                    returned = true;
-                    List<Constant> tupleElements = new ArrayList<>();
-                    tupleElements.add(new IntegerConstant(sum));
-                    return new Tuple(tupleElements);
                 }
             } else {
                 // production terms
-
                 while((tuple = child.getNextTuple()) != null) {
-                    int product = 1;
-                    for (Term term : sumAggregate.getProductTerms()) {
-                        if (term instanceof IntegerConstant) {
-                            int value = ((IntegerConstant) term).getValue();
-                            product = value * product;
-                        } else { // variable
-                            int index = relationalAtom.getTerms().indexOf(term);
-                            int value = ((IntegerConstant) tuple.getAttributes().get(index)).getValue();
-                            product *= value;
-                        }
-                    }
-                    sum += product;
+                    sum += getProductResult(tuple);
                 }
-                List<Constant> tupleElements = new ArrayList<>();
-                tupleElements.add(new IntegerConstant(sum));
-                returned = true;
-                return new Tuple(tupleElements);
             }
+            returned = true;
+            return constructTupleWithInt(sum);
         }
 
         if (groupVariables.size() > 0) {
@@ -129,7 +107,13 @@ public class SumOperator extends Operator {
             tupleWithGroupVariableAttributes.add(tuple.getAttributes().get(index));
         }
 
-        // aggregation terms
+        // add aggregate term
+        tupleWithGroupVariableAttributes.add(new IntegerConstant(getProductResult(tuple)));
+
+        return new Tuple(tupleWithGroupVariableAttributes);
+    }
+
+    private int getProductResult(Tuple tuple) {
         int product = 1;
         for (Term term : sumAggregate.getProductTerms()) {
             if (term instanceof IntegerConstant) {
@@ -141,8 +125,12 @@ public class SumOperator extends Operator {
                 product *= value;
             }
         }
-        tupleWithGroupVariableAttributes.add(new IntegerConstant(product));
+        return product;
+    }
 
-        return new Tuple(tupleWithGroupVariableAttributes);
+    private Tuple constructTupleWithInt(int integer) {
+        List<Constant> tupleElements = new ArrayList<>();
+        tupleElements.add(new IntegerConstant(integer));
+        return new Tuple(tupleElements);
     }
 }
