@@ -84,14 +84,16 @@ public class QueryPlan {
             root = constructJoinOperator(root, relationalAtomRAs, comparisonAtoms, 1);
         }
 
-        // check if the order of head has been changed, or if any terms in the head have been projected away
-        // if so, create a ProjectOperator as a root
+
         Head head = query.getHead();
 
         if (head.getSumAggregate() != null) {
             root = new SumOperator(root, head.getVariables(), head.getSumAggregate(), mergedRelationalAtom);
             return;
         }
+
+        // check if the order of head has been changed, or if any terms in the head have been projected away
+        // if so, create a ProjectOperator as a root
         if ((head.getVariables().size() < mergedRelationalAtom.getTerms().size()) ||
                 checkQueryHeadOrderChanged(head.getVariables(), mergedRelationalAtom)) {
             // some variables have been projected away
@@ -99,6 +101,13 @@ public class QueryPlan {
         }
     }
 
+    /**
+     * Check If the order of variables in head is different from order in given relational atom
+     * so that we can know the project operator should be performed
+     * @param head variables in head, query.head()
+     * @param relationalAtom the relational atom used to compare
+     * @return A boolean flag which indicates the order has been changed or not
+     */
     private boolean checkQueryHeadOrderChanged(List<Variable> head, RelationalAtom relationalAtom) {
         List<Variable> body = new ArrayList<>();
         for (Term term : relationalAtom.getTerms()) {
@@ -113,6 +122,10 @@ public class QueryPlan {
         return false;
     }
 
+    /**
+     * generate random string in 2 characters used to transform constants in tuples to variables
+     * @return random string in 2 characters
+     */
     private String generateNewLetterForConstantTerm() {
         String alphabet = "abcdefghijklmnopqrstuvwxyz";
         StringBuilder stringBuffer = new StringBuilder();
@@ -203,6 +216,9 @@ public class QueryPlan {
         return constructJoinOperator(root, relationalAtoms, predicates, rightChildIndex + 1);
     }
 
+    /**
+     * merge two relational atoms with integrated their terms into one large atom
+     */
     private RelationalAtom mergeRelationalAtom(RelationalAtom ra1, RelationalAtom ra2) {
         List<Term> mergedTerms = new ArrayList<>();
         mergedTerms.addAll(ra1.getTerms());
