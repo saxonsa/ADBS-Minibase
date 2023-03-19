@@ -4,6 +4,7 @@ import ed.inf.adbs.minibase.base.*;
 import ed.inf.adbs.minibase.operator.common.ComparisonEvaluator;
 import ed.inf.adbs.minibase.operator.db.Tuple;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class JoinOperator extends Operator {
@@ -13,6 +14,7 @@ public class JoinOperator extends Operator {
     private final List<ComparisonAtom> predicates;
     private Tuple leftTuple;
     private Tuple rightTuple;
+    private final List<Tuple> reportedTuples;
 
     public JoinOperator(Operator leftChild, Operator rightChild,
                         RelationalAtom mergedRelationalAtom, List<ComparisonAtom> predicates) {
@@ -22,6 +24,7 @@ public class JoinOperator extends Operator {
         this.mergedRelationalAtom = mergedRelationalAtom;
         this.leftTuple = this.leftChild.getNextTuple();
         this.rightTuple = this.rightChild.getNextTuple();
+        this.reportedTuples = new ArrayList<>();
     }
 
     @Override
@@ -39,7 +42,11 @@ public class JoinOperator extends Operator {
             }
 
             if (checkTuplePassAllPredicates(mergedTuple)) {
-                return mergedTuple;
+                // remember we need to check the tuples that are after processed
+                if (!reportedTuples.contains(mergedTuple)) {
+                    reportedTuples.add(mergedTuple);
+                    return mergedTuple;
+                }
             }
         }
         return null;
