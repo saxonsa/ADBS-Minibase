@@ -29,6 +29,14 @@ public class ResultWriter {
          * or cannot be opened for any other reason
      */
     public static void init(String outputFile) throws IOException {
+        // create output folder for evaluation if it does not exist
+        File outputDir = new File("data/evaluation/output");
+        if (!outputDir.exists()) {
+            if (!outputDir.mkdir()) {
+                System.err.println("Fail to create output folder!");
+            }
+        }
+
         File saveFile = Paths.get(outputFile).toFile();
         saveFile.createNewFile();
 

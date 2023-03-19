@@ -343,8 +343,7 @@ public class CQMinimizer {
         // create output folder if it does not exist (data/minimization/output)
         File outputDir = new File("data/minimization/output");
         if (!outputDir.exists()) {
-            boolean result = outputDir.mkdir();
-            if (!result) {
+            if (!outputDir.mkdir()) {
                 System.err.println("Fail to create output folder!");
             }
         }

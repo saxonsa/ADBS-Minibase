@@ -18,7 +18,7 @@ public class QueryPlan {
     }
 
     private void constructQueryTree() {
-        // create a ScamOperator as a root for any queries
+        // create a ScanOperator as a root for any queries
         List<RelationalAtom> relationalAtoms = query.getBody().stream()
                 .filter(RelationalAtom.class::isInstance)
                 .map(RelationalAtom.class::cast).collect(Collectors.toList());
