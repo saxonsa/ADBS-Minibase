@@ -20,7 +20,11 @@ public class Minibase {
         String inputFile = args[1];
         String outputFile = args[2];
 
+//        long startTime = System.currentTimeMillis();
         evaluateCQ(databaseDir, inputFile, outputFile);
+//        long endTime = System.currentTimeMillis();
+//        long duration = endTime - startTime;
+//        System.out.println("Execution time of evaluateCQ() in milliseconds: " + duration);
     }
 
     public static void evaluateCQ(String databaseDir, String inputFile, String outputFile) {
