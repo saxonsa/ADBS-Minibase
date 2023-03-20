@@ -44,13 +44,16 @@ The idea of optimization is following:
 Evaluation: the performance of hash join is not good as we are expected, the possible reason is that the data in assignment has been stored in a single page,
 and the cost on page could be ignored so that the simple nested loop would be more efficient.
 
-3. **Determine join order**: Join two smaller tables first, then join with the one containing larger amount of tuples
+2. **Determine join order**: Join two smaller tables first, then join with the one containing larger amount of tuples
 
 Step: 
+
 - Denote size of the number of tuples in all relations after selection operator performed
 - Let the table with smaller number of tuples be the left child, and the following larger one as its right child
 
 Evaluation:
+
 The performance of them is also not good as we are expected before the experiment, the reason is that we are using iterator model, and 
 only able to aware a single row while processing the `getNextTuple` method, and calculating the number of tuples in a relation needed to go through all tuples which cost a lot.
+
 3. **Cost-based Scan**: Implement (Hash) index-scan and use it when it performs better than fully-table scan (Pending)
