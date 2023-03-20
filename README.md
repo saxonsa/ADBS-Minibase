@@ -37,16 +37,19 @@ and add a comparison condition on it. For example, we generate a random letter (
 `R(x, y, z), S(um, w, t)`, and a comparison atom `x = um` will be added to the predicates.
 
 ### Task3: Optimization
-The primary idea of optimization is following:
+The idea of optimization is following:
 
 1. Implement **cost-based join**: Hash join and Sort-Merge join, and perform them when it performs better than simple-nested loop join
+
 Evaluation: the performance of hash join is not good as we are expected, the possible reason is that the data in assignment has been stored in a single page,
 and the cost on page could be ignored so that the simple nested loop would be more efficient.
 
 3. **Determine join order**: Join two smaller tables first, then join with the one containing larger amount of tuples
+
 Step: 
 - Denote size of the number of tuples in all relations after selection operator performed
 - Let the table with smaller number of tuples be the left child, and the following larger one as its right child
+
 Evaluation:
 The performance of them is also not good as we are expected before the experiment, the reason is that we are using iterator model, and 
 only able to aware a single row while processing the `getNextTuple` method, and calculating the number of tuples in a relation needed to go through all tuples which cost a lot.
