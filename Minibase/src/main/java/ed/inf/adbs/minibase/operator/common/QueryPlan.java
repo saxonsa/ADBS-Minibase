@@ -18,6 +18,10 @@ public class QueryPlan {
         constructQueryTree();
     }
 
+    /**
+     * Construct query plan in tree structure
+     * The root will be updated continuously and could be use to fetch results
+     */
     private void constructQueryTree() {
         // create a ScanOperator as a root for any queries
         List<RelationalAtom> relationalAtoms = query.getBody().stream()
@@ -85,9 +89,8 @@ public class QueryPlan {
             root = constructJoinOperator(root, relationalAtomRAs, comparisonAtoms, 1);
         }
 
-
+        // check if the head contains aggregate atoms
         Head head = query.getHead();
-
         if (head.getSumAggregate() != null) {
             root = new SumOperator(root, head.getVariables(), head.getSumAggregate(), mergedRelationalAtom);
             return;

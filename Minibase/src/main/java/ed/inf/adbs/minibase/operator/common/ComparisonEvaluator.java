@@ -5,6 +5,11 @@ import ed.inf.adbs.minibase.operator.db.Tuple;
 
 import java.util.function.Predicate;
 
+/**
+ * The evaluator is used to support the check for Comparison atom
+ * It could check if the given tuple fulfills the comparison condition
+ */
+
 public class ComparisonEvaluator {
     private final Tuple tuple;
     private final ComparisonAtom predicate;
@@ -16,11 +21,16 @@ public class ComparisonEvaluator {
         this.relationalAtom = relationalAtom;
     }
 
+    /**
+     * Check if the given tuple (passed in constructor) fulfills the condition of predicate
+     * @return The boolean value indicates the tuples pass the given predicates or not
+     */
     public boolean check() {
         Term term1 = predicate.getTerm1();
         Term term2 = predicate.getTerm2();
         ComparisonOperator op = predicate.getOp();
 
+        // tranform the both terms into corresponding constants if they are in Variable format using for comparison
         Constant constTerm1 = term1 instanceof Variable ?
                 tuple.getAttributes().get(relationalAtom.getTerms().indexOf(term1)) : (Constant) term1;
 
@@ -28,6 +38,7 @@ public class ComparisonEvaluator {
                 tuple.getAttributes().get(relationalAtom.getTerms().indexOf(term2)) : (Constant) term2;
 
         if (constTerm1 instanceof IntegerConstant) {
+            // compare terms when they are in Integer format
             int value1 = ((IntegerConstant) constTerm1).getValue();
             int value2 = ((IntegerConstant) constTerm2).getValue();
             switch (op) {
@@ -45,6 +56,7 @@ public class ComparisonEvaluator {
                     return value1 <= value2;
             }
         } else {
+            // compare when the term on both sides are in string format
             String s1 = constTerm1.toString();
             String s2 = constTerm2.toString();
             switch (op) {

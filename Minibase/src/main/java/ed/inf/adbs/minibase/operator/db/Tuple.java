@@ -16,6 +16,9 @@ public class Tuple {
 
     /**
      * A construct to glue two tuples togethers for supporting join operator
+     * Used to merge to relational atoms
+     * @param t1 first tuple to merge
+     * @param t2 second tuple to merge
      */
     public Tuple(Tuple t1, Tuple t2) {
         this.attributes.addAll(t1.getAttributes());

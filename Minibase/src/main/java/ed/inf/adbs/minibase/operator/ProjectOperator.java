@@ -17,6 +17,7 @@ public class ProjectOperator extends Operator {
     private final RelationalAtom relationalAtom;
     private final Query query;
 
+    //  this constructor creates a projection operator perojecting over tuples resulting from a varying number of joins
     public ProjectOperator(Operator child, Query query, RelationalAtom relationalAtom) {
         this.child = child;
         this.relationalAtom = relationalAtom;
@@ -24,6 +25,15 @@ public class ProjectOperator extends Operator {
         this.reportedTuples = new ArrayList<>();
     }
 
+    /**
+     * Gets the next tuple from the child operator and returns the relevant columns as specified in the operator
+     *
+     * Incorporates set semantics by adding to reportedTuples of tuples emitted, updating the reportedTuples from only keeping the required columns.
+     * If the current child tuple's projection has been output previously, continue searching until a unique one is found.
+     *       Upon discovery, emit the new tuple and include it in the set of released tuples.
+     *
+     * @return the next valid tuple. if none found, return null.
+     */
     @Override
     public Tuple getNextTuple() {
         Tuple tuple;
@@ -45,6 +55,11 @@ public class ProjectOperator extends Operator {
         child.reset();
     }
 
+    /**
+     * get the tuples with projected attributes specified in variables in head
+     * @param tuple Fetched tuple from child operator which contains full attributes
+     * @return Tuples with projected attributes
+     */
     private Tuple getProjectedTuples(Tuple tuple) {
         List<Constant> projectedAttributes = new ArrayList<>();
         for (Variable var : query.getHead().getVariables()) {

@@ -25,6 +25,7 @@ public class Interpreter {
 
     /**
      * Parse query from input and generate result through dump of plan root
+     * Initialize resultWriter with given outputFile using to output results
      */
     public void dump() {
         try {

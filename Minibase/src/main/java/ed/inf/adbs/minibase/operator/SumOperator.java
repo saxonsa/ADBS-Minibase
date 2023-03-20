@@ -35,6 +35,9 @@ public class SumOperator extends Operator {
     public Tuple getNextTuple() {
         int sum = 0;
         Tuple tuple;
+
+        // if there is no group variables, and no result has been returned before
+        // then only perform Sum Operator on sum Aggregate atom, SUM(int) and SUM(var)
         if (!returned && groupVariables.size() == 0) {
             if (sumAggregate.getProductTerms().size() == 1) {
                 Term singleSumTerm = sumAggregate.getProductTerms().get(0);
@@ -52,7 +55,7 @@ public class SumOperator extends Operator {
                     }
                 }
             } else {
-                // production terms
+                // production terms SUM(int * int * var)
                 while((tuple = child.getNextTuple()) != null) {
                     sum += getProductResult(tuple);
                 }
@@ -99,6 +102,11 @@ public class SumOperator extends Operator {
         return ((IntegerConstant) tuple.getAttributes().get(relationalAtom.getTerms().indexOf(var))).getValue();
     }
 
+    /**
+     * combine group variables with aggregate terms: Tuple(group varibles... SUM..)
+     * @param tuple The original tuple used to genereate aggregation result
+     * @return The tuples with specified group variables and aggregation result
+     */
     private Tuple getTupleWithGroupVariable(Tuple tuple) {
         // group variable terms
         List<Constant> tupleWithGroupVariableAttributes = new ArrayList<>();
@@ -113,6 +121,11 @@ public class SumOperator extends Operator {
         return new Tuple(tupleWithGroupVariableAttributes);
     }
 
+    /**
+     * get the result of product according to the formula in aggregation rules
+     * @param tuple The original tuple used to genereate aggregation result
+     * @return The product in integer
+     */
     private int getProductResult(Tuple tuple) {
         int product = 1;
         for (Term term : sumAggregate.getProductTerms()) {

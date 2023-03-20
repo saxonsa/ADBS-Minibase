@@ -60,6 +60,11 @@ public class JoinOperator extends Operator {
         this.rightTuple = this.rightChild.getNextTuple();
     }
 
+    /**
+     * check if the given tuple fulfills the join conditions
+     * @param tuple Given tuple to check
+     * @return A boolean value indicating the result of passing or not
+     */
     private boolean checkTuplePassAllPredicates(Tuple tuple) {
 
         return predicates.stream().allMatch(predicate -> {

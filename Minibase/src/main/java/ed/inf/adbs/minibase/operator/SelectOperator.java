@@ -42,6 +42,11 @@ public class SelectOperator extends Operator {
         child.reset();
     }
 
+    /**
+     * check if the given tuple could pass all the selection conditions in predicates
+     * @param tuple A given tuple used to test if it fulfills the selective condition
+     * @return Boolean result indicates the tuple could pass selective condition or not
+     */
     private boolean checkTuplePassAllPredicates(Tuple tuple) {
 
         return predicates.stream().allMatch(predicate -> {
