@@ -39,8 +39,8 @@ and add a comparison condition on it. For example, we generate a random letter (
 ### Task3: Optimization
 The primary idea of optimization is following:
 
-1. **Swap Tables** Join two smaller tables first, then join with the one containing larger amount of tuples (Pending)
+1. **Swap Tables**: Join two smaller tables first, then join with the one containing larger amount of tuples (Pending)
 - Denote size of the number of tuples in all relations after selection operator performed
 - Let the table with smaller number of tuples be the left child, and the following larger one as its right child
-2. **Cost-based Scan** Implement (Hash) index-scan and use it when it performs better than fully-table scan (Pending)
-3. Implement **cost-based join**, Hash join and Sort-Merge join, and perform them when it performs better than simple-nested loop join. (Pending)
+2. **Cost-based Scan**: Implement (Hash) index-scan and use it when it performs better than fully-table scan (Pending)
+3. Implement **cost-based join**: Hash join and Sort-Merge join, and perform them when it performs better than simple-nested loop join. (Pending)
