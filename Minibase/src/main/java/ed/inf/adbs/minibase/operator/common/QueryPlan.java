@@ -3,6 +3,7 @@ package ed.inf.adbs.minibase.operator.common;
 import ed.inf.adbs.minibase.base.*;
 import ed.inf.adbs.minibase.operator.*;
 
+import javax.management.relation.Relation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -194,13 +195,14 @@ public class QueryPlan {
         if (rightChildIndex == relationalAtoms.size()) {
             return root;
         }
+
         if (rightChildIndex == 1) {
             mergedRelationalAtom = relationalAtoms.get(0);
-            root = new ScanOperator(relationalAtoms.get(0));
+            root = new ScanOperator(mergedRelationalAtom);
             // check selection condition for leftChild
-            List<ComparisonAtom> predicatesOnLeftChild = extractPredicates(relationalAtoms.get(0), predicates);
+            List<ComparisonAtom> predicatesOnLeftChild = extractPredicates(mergedRelationalAtom, predicates);
             if (predicatesOnLeftChild.size() > 0) {
-                root = new SelectOperator(root, relationalAtoms.get(0), predicatesOnLeftChild);
+                root = new SelectOperator(root, mergedRelationalAtom, predicatesOnLeftChild);
             }
         }
 
