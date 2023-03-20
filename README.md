@@ -41,7 +41,7 @@ The idea of optimization is following:
 
 1. Implement **cost-based join**: Hash join and Sort-Merge join, and perform them when it performs better than simple-nested loop join
 
-Evaluation: the performance of hash join is not good as we are expected, the possible reason is that the data in assignment has been stored in a single page,
+Evaluation: the performance of hash join is not good as expected, the possible reason is that the data in assignment has been stored in a single page,
 and the cost on page could be ignored so that the simple nested loop would be more efficient.
 
 2. **Determine join order**: Join two smaller tables first, then join with the one containing larger amount of tuples
@@ -53,7 +53,7 @@ Step:
 
 Evaluation:
 
-The performance of them is also not good as we are expected before the experiment, the reason is that we are using iterator model, and 
+The performance of them is also not good as expected before the experiment, the reason is that we are using iterator model, and 
 only able to aware a single row while processing the `getNextTuple` method, and calculating the number of tuples in a relation needed to go through all tuples which cost a lot.
 
 3. **Cost-based Scan**: Implement (Hash) index-scan and use it when it performs better than fully-table scan (Pending)
