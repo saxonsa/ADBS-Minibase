@@ -56,6 +56,8 @@ public class JoinOperator extends Operator {
     public void reset() {
         leftChild.reset();
         rightChild.reset();
+        this.leftTuple = this.leftChild.getNextTuple();
+        this.rightTuple = this.rightChild.getNextTuple();
     }
 
     private boolean checkTuplePassAllPredicates(Tuple tuple) {
