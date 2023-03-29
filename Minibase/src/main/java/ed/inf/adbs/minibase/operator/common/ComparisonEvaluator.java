@@ -30,7 +30,7 @@ public class ComparisonEvaluator {
         Term term2 = predicate.getTerm2();
         ComparisonOperator op = predicate.getOp();
 
-        // tranform the both terms into corresponding constants if they are in Variable format using for comparison
+        // transform the both terms into corresponding constants if they are in Variable format using for comparison
         Constant constTerm1 = term1 instanceof Variable ?
                 tuple.getAttributes().get(relationalAtom.getTerms().indexOf(term1)) : (Constant) term1;
 

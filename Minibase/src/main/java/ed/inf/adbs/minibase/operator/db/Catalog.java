@@ -87,7 +87,7 @@ public class Catalog {
     }
 
     /**
-     * tranform the type of attribute from String into Class format
+     * transform the type of attribute from String into Class format
      * i.e such as int -> IntegerConstant, String -> StringConstant
      * @param attribute given type of attribute to extract
      * @return the class of corresponding type of attribute
