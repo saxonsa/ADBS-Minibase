@@ -33,6 +33,7 @@ public class SumOperator extends Operator {
 
     @Override
     public Tuple getNextTuple() {
+
         int sum = 0;
         Tuple tuple;
 
@@ -72,15 +73,26 @@ public class SumOperator extends Operator {
                 if (sumTuple == null) {
                     sumTuple = tupleWithGroupVariable;
                 } else {
-                    // check(currentTuple)
+                    // check if the group-by conditions are the same,
+                    // i.e. same variables for current sum tuple and coming tuple
+                    // if they are different, output current tuple
+                    // if they are same, aggregate the result and continue to read next tuple
                     for (int i = 0; i < tupleWithGroupVariable.getAttributes().size() - 1; i++) {
-                        if (!Objects.equals(((IntegerConstant) tupleWithGroupVariable.getAttributes().get(i)).getValue(),
-                                ((IntegerConstant) sumTuple.getAttributes().get(i)).getValue())) {
-                            return sumTuple;
+                        if (tupleWithGroupVariable.getAttributes().get(i) instanceof IntegerConstant) {
+                            if (!Objects.equals(((IntegerConstant) tupleWithGroupVariable.getAttributes().get(i)).getValue(),
+                                    ((IntegerConstant) sumTuple.getAttributes().get(i)).getValue())) {
+                                return sumTuple;
+                            }
+                        } else {
+                            if (!Objects.equals(((StringConstant) tupleWithGroupVariable.getAttributes().get(i)).getValue(),
+                                    ((StringConstant) sumTuple.getAttributes().get(i)).getValue())) {
+                                return sumTuple;
+                            }
                         }
+
                     }
 
-                    // add to sumTuple
+                    // aggregate current tuple to sumTuple
                     int finalIndex = tupleWithGroupVariable.getAttributes().size() - 1;
                     int valueOnCurrentTuple = ((IntegerConstant)tupleWithGroupVariable.getAttributes().get(finalIndex)).getValue();
                     int valueOnSumTuple = ((IntegerConstant)sumTuple.getAttributes().get(finalIndex)).getValue();
@@ -141,6 +153,11 @@ public class SumOperator extends Operator {
         return product;
     }
 
+    /**
+     * transform a pure integer to a tuple element
+     * @param integer given integer waiting to transform
+     * @return the result tuple with the given integer
+     */
     private Tuple constructTupleWithInt(int integer) {
         List<Constant> tupleElements = new ArrayList<>();
         tupleElements.add(new IntegerConstant(integer));
