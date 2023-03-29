@@ -110,6 +110,12 @@ public class SumOperator extends Operator {
     @Override
     public void reset() {}
 
+    /**
+     * Extract the corresponding term in the SUM operator in the tuple
+     * @param tuple current tuple to fetch the corresponding term
+     * @param var term to extract
+     * @return the term extracted, generally should be a integer to support SUM only
+     */
     private int extractSumTerm(Tuple tuple, Term var) {
         return ((IntegerConstant) tuple.getAttributes().get(relationalAtom.getTerms().indexOf(var))).getValue();
     }
